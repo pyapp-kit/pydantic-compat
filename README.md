@@ -55,6 +55,23 @@ class MyModel(PydanticCompatMixin, BaseModel):
         return v
 ```
 
+You can now use the following attributes and methods regardless of the
+pydantic version installed (without deprecation warnings):
+
+| v1 name                     | v2 name                     |
+| --------------------------- | --------------------------- |
+| `obj.dict()`                | `obj.model_dump()`          |
+| `obj.json()`                | `obj.model_dump_json()`     |
+| `obj.copy()`                | `obj.model_copy()`          |
+| `Model.construct`           | `Model.model_construct`     |
+| `Model.schema`              | `Model.model_json_schema`   |
+| `Model.validate`            | `Model.model_validate`      |
+| `Model.parse_obj`           | `Model.model_validate`      |
+| `Model.parse_raw`           | `Model.model_validate_json` |
+| `Model.update_forward_refs` | `Model.model_rebuild`       |
+| `Model.__fields__`          | `Model.model_fields`        |
+| `Model.__fields_set__`      | `Model.model_fields_set`    |
+
 ## API rules
 
 - both V1 and V2 names may be used (regardless of pydantic version), but
@@ -70,7 +87,7 @@ class MyModel(PydanticCompatMixin, BaseModel):
 
 - `BaseModel.__fields__` in v1 is a dict of `{'field_name' -> ModelField}`
   whereas in v2 `BaseModel.model_fields` is a dict of `{'field_name' ->
-  FieldInfo}`. `FieldInfo` is a much simpler object that ModelField, so it is
+FieldInfo}`. `FieldInfo` is a much simpler object that ModelField, so it is
   difficult to directly support complicated v1 usage of `__fields__`.
   `pydantic-compat` simply provides a name addaptor that lets you access many of
   the attributes you may have accessed on `ModelField` in v1 while operating in
@@ -79,7 +96,7 @@ class MyModel(PydanticCompatMixin, BaseModel):
 
 - in V2, `pydantic.model_validator(..., mode='after')` passes a model _instance_
   to the validator function, whereas `pydantic.v1.root_validator(...,
-  pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
+pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
   validator function. In pydantic-compat, both decorators follow the semantics
   of their corresponding pydantic versions, _but_ `root_validator` gains
   parameter `construct_object: bool=False` that matches the `model_validator`
