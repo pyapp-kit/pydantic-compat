@@ -24,6 +24,9 @@ from ._shared import PYDANTIC2
 
 if TYPE_CHECKING:
     from pydantic import field_validator, model_validator, root_validator, validator
+
+    from ._v2 import PydanticCompatMixin
+
 elif PYDANTIC2:
     from pydantic import field_validator, model_validator
 

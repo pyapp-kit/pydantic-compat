@@ -57,7 +57,8 @@ class MyModel(PydanticCompatMixin, BaseModel):
 
 ## API rules
 
-- both V1 and V2 names may be used (regardless of pydantic version).
+- both V1 and V2 names may be used (regardless of pydantic version), but
+  usage of V2 names are strongly recommended.
 - But the API must match the pydantic version matching the name you are using.
   For example, if you are using `pydantic_compat.field_validator` then the
   signature must match the pydantic (v2) `field_validator` signature (regardless)
