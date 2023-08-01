@@ -1,4 +1,5 @@
 from __future__ import annotations
+import sys
 
 from typing import TYPE_CHECKING, Any, Iterator, Mapping, TypeVar
 
@@ -15,6 +16,15 @@ if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
     BM = TypeVar("BM", bound=BaseModel)
+
+
+if sys.version_info < (3, 9):
+    from pydantic import main
+
+    def _get_fields(obj) -> dict[str, Any]:
+        return obj.__fields__
+
+    main.ModelMetaclass.model_fields = property(_get_fields)
 
 
 class PydanticCompatMixin:
@@ -50,10 +60,18 @@ class PydanticCompatMixin:
     def model_rebuild(cls: type[BM], force: bool = True, **kwargs: Any) -> None:
         return cls.update_forward_refs(**kwargs)
 
-    @classmethod  # type: ignore
-    @property
-    def model_fields(cls: type[BM]) -> Mapping[str, Any]:
-        return FieldInfoMap(cls.__fields__)
+    if sys.version_info < (3, 9):
+        # differences in the behavior of patching class properties in python<3.9
+        @property
+        def model_fields(cls: type[BM]) -> Mapping[str, Any]:
+            return FieldInfoMap(cls.__fields__)
+
+    else:
+
+        @classmethod  # type: ignore
+        @property
+        def model_fields(cls: type[BM]) -> Mapping[str, Any]:
+            return FieldInfoMap(cls.__fields__)
 
     @property
     def model_fields_set(self: BM) -> set[str]:
