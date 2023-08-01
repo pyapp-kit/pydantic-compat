@@ -31,6 +31,20 @@ I have come across. I will be using it in:
 Feel free to open an issue or PR if you find it useful, but lacking features
 you need.
 
+## What does it do?
+
+Not much! :joy:
+
+Mostly serves to translate names from one API to another. While
+pydantic2 does offer deprecated access to the v1 API, if you explicitly
+wish to support pydantic1 without your users seeing deprecation warnings,
+then you need to do a lot of name adaptation depending on the runtime
+pydantic version. This package does that for you.
+
+It does *not* do any significantly complex translation of API logic.
+For custom types, you will still likely need to add class methods to
+support both versions of pydantic.
+
 ## Usage
 
 ```py
@@ -102,3 +116,9 @@ pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
   parameter `construct_object: bool=False` that matches the `model_validator`
   behavior (only when `mode=='after'`). If you want that behavior though, prefer
   using `model_validator` directly.
+
+## TODO:
+
+- `Field()` objects
+- `BaseConfig` objects
+- Serialization decorators
