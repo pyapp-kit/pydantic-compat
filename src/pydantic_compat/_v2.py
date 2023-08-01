@@ -59,23 +59,21 @@ class PydanticCompatMixin:
     def __fields_set__(self: BM) -> set[str]:
         return self.model_fields_set
 
-    if not TYPE_CHECKING:
+    @classmethod
+    def update_forward_refs(
+        cls: type[BM],
+        force: bool = False,
+        raise_errors: bool = True,
+        **localns: Any,
+    ) -> None:
+        cls.model_rebuild(
+            forc=force, raise_errors=raise_errors, _types_namespace=localns
+        )
 
-        @classmethod
-        def update_forward_refs(
-            cls: type[BM],
-            force: bool = False,
-            raise_errors: bool = True,
-            **localns: Any,
-        ) -> None:
-            cls.model_rebuild(
-                forc=force, raise_errors=raise_errors, _types_namespace=localns
-            )
-
-        @classmethod
-        def model_rebuild(
-            cls: type[BM], force: bool = False, raise_errors: bool = True, **kwargs: Any
-        ) -> None:
-            return super().model_rebuild(
-                force=force, raise_errors=raise_errors, _types_namespace=kwargs
-            )
+    @classmethod
+    def model_rebuild(
+        cls: type[BM], force: bool = False, raise_errors: bool = True, **kwargs: Any
+    ) -> None:
+        return super().model_rebuild(
+            force=force, raise_errors=raise_errors, _types_namespace=kwargs
+        )

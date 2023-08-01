@@ -1,5 +1,7 @@
 """CompatibilityMixin for pydantic v1/1/v2."""
+
 from importlib.metadata import PackageNotFoundError, version
+from typing import TYPE_CHECKING
 
 try:
     __version__ = version("pydantic-compat")
@@ -20,8 +22,9 @@ __all__ = [
 
 from ._shared import PYDANTIC2
 
-# if not TYPE_CHECKING:
-if PYDANTIC2:
+if TYPE_CHECKING:
+    from pydantic import field_validator, model_validator, root_validator, validator
+elif PYDANTIC2:
     from pydantic import field_validator, model_validator
 
     from ._v2 import PydanticCompatMixin

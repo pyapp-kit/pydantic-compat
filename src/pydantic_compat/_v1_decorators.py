@@ -55,8 +55,9 @@ def model_validator(*, mode: Literal["wrap", "before", "after"]) -> Callable:
     #     skip_on_failure: bool = False,
     # ) -> Union["AnyClassMethod", Callable[[AnyCallable], "AnyClassMethod"]]:
     #     ...
-    pre = mode == "before"
-    return pydantic.root_validator(pre=pre, allow_reuse=True)
+    return root_validator(
+        pre=mode == "before", allow_reuse=True, construct_object=mode == "after"
+    )
 
 
 def root_validator(
