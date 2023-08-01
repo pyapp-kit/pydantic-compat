@@ -7,4 +7,80 @@
 [![CI](https://github.com/tlambert03/pydantic-compat/actions/workflows/ci.yml/badge.svg)](https://github.com/tlambert03/pydantic-compat/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/tlambert03/pydantic-compat/branch/main/graph/badge.svg)](https://codecov.io/gh/tlambert03/pydantic-compat)
 
-CompatibilityMixin for pydantic v1/1/v2
+## Motivation
+
+Pydantic 2 was a major release that completely changed the pydantic API.
+
+For applications, this is not a big deal, as they can pin to whatever version of
+pydantic they need. But for libraries that want to exist in a broader
+environment, pinning to a specific version of pydantic is not always an option
+(as it limits the ability to co-exist with other libraries).
+
+This package provides compatibility mixins and function adaptors for pydantic
+v1-v2 cross compatibility. It allows you to use either v1 or v2 API names,
+regardless of the pydantic version installed. (Prefer using v2 names when possible)
+
+The API conversion is not exhaustive, but suffices for many of the use cases
+I have come across. I will be using it in:
+
+- [ome-types](https://github.com/tlambert03/ome-types)
+- [psygnal](https://github.com/pyapp-kit/psygnal)
+- [app-model](https://github.com/pyapp-kit/app-model)
+- [useq-schema](https://github.com/pymmcore-plus/useq-schema)
+
+Feel free to open an issue or PR if you find it useful, but lacking features
+you need.
+
+## Usage
+
+```py
+from pydantic import BaseModel
+from pydantic_compat import PydanticCompatMixin
+from pydantic_compat import field_validator  # or 'validator'
+from pydantic_compat import model_validator  # or 'root_validator'
+
+class MyModel(PydanticCompatMixin, BaseModel):
+    x: int
+    y: int = 2
+
+    @field_validator('x', mode='after')
+    def _check_x(cls, v):
+        if v != 42:
+            raise ValueError("That's not the answer!")
+        return v
+
+    @model_validator('x', mode='after')
+    def _check_x(cls, v: MyModel):
+        # ...
+        return v
+```
+
+## API rules
+
+- both V1 and V2 names may be used (regardless of pydantic version).
+- But the API must match the pydantic version matching the name you are using.
+  For example, if you are using `pydantic_compat.field_validator` then the
+  signature must match the pydantic (v2) `field_validator` signature (regardless)
+  of the pydantic version installed. Similarly, if you choose to use
+  `pydantic_compat.validator` then the signature must match the pydantic
+  (v1) `validator` signature.
+
+## Notable differences
+
+- `BaseModel.__fields__` in v1 is a dict of `{'field_name' -> ModelField}`
+  whereas in v2 `BaseModel.model_fields` is a dict of `{'field_name' ->
+  FieldInfo}`. `FieldInfo` is a much simpler object that ModelField, so it is
+  difficult to directly support complicated v1 usage of `__fields__`.
+  `pydantic-compat` simply provides a name addaptor that lets you access many of
+  the attributes you may have accessed on `ModelField` in v1 while operating in
+  a v2 world, but `ModelField` methods will not be made available. You'll need
+  to update your usage accordingly.
+
+- in V2, `pydantic.model_validator(..., mode='after')` passes a model _instance_
+  to the validator function, whereas `pydantic.v1.root_validator(...,
+  pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
+  validator function. In pydantic-compat, both decorators follow the semantics
+  of their corresponding pydantic versions, _but_ `root_validator` gains
+  parameter `construct_object: bool=False` that matches the `model_validator`
+  behavior (only when `mode=='after'`). If you want that behavior though, prefer
+  using `model_validator` directly.
