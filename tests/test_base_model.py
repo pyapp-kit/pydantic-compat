@@ -4,10 +4,11 @@ import pytest
 from pydantic_compat import PydanticCompatMixin
 
 
-def test_v1_methods():
-    class Model(PydanticCompatMixin, pydantic.BaseModel):
-        x: int = 1
+class Model(PydanticCompatMixin, pydantic.BaseModel):
+    x: int = 1
 
+
+def test_v1_api():
     m = Model()
     assert m.x == 1
     assert m.dict() == {"x": 1}
@@ -26,11 +27,10 @@ def test_v1_methods():
         },
     }
 
+    Model.update_forward_refs(name="name")
 
-def test_v2_methods():
-    class Model(PydanticCompatMixin, pydantic.BaseModel):
-        x: int = 1
 
+def test_v2_api():
     m = Model()
     assert m.x == 1
     assert m.model_dump() == {"x": 1}
@@ -48,6 +48,25 @@ def test_v2_methods():
             "x": {"title": "X", "type": "integer", "default": 1},
         },
     }
+    Model.model_rebuild(force=True)
+
+
+def test_v1_attributes():
+    m = Model()
+    assert "x" in m.__fields__
+    assert "x" in Model.__fields__
+    assert "x" not in m.__fields_set__
+    m.x = 2
+    assert "x" in m.__fields_set__
+
+
+def test_v2_attributes():
+    m = Model()
+    assert "x" in m.model_fields
+    assert "x" in Model.model_fields
+    assert "x" not in m.model_fields_set
+    m.x = 2
+    assert "x" in m.model_fields_set
 
 
 def test_mixin_order():

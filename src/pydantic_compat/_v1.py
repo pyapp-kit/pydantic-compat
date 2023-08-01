@@ -1,15 +1,20 @@
-from typing import Any, Iterator, Mapping, TypeVar
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Iterator, Mapping, TypeVar
 
 import pydantic.version
-from pydantic import BaseModel
-from pydantic.fields import ModelField
-
-from ._shared import _check_mixin_order
 
 if not pydantic.version.VERSION.startswith("1"):
     raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
 
-BM = TypeVar("BM", bound=BaseModel)
+from pydantic import BaseModel
+
+from ._shared import _check_mixin_order
+
+if TYPE_CHECKING:
+    from pydantic.fields import ModelField
+
+    BM = TypeVar("BM", bound=BaseModel)
 
 
 class PydanticCompatMixin:
@@ -42,7 +47,7 @@ class PydanticCompatMixin:
         return cls.parse_raw(*args, **kwargs)
 
     @classmethod
-    def model_rebuild(cls: type[BM], **kwargs: Any) -> None:
+    def model_rebuild(cls: type[BM], force=True, **kwargs: Any) -> None:
         return cls.update_forward_refs(**kwargs)
 
     @classmethod
@@ -51,8 +56,8 @@ class PydanticCompatMixin:
         return FieldInfoMap(cls.__fields__)
 
     @property
-    def model_fields_set(self, obj: BM) -> set[str]:
-        return obj.__fields_set__
+    def model_fields_set(self: BM) -> set[str]:
+        return self.__fields_set__
 
     @classmethod
     @property
@@ -61,6 +66,8 @@ class PydanticCompatMixin:
 
 
 class FieldInfoLike:
+    """Wrapper to convera pydantic v1 ModelField to v2 FieldInfo."""
+
     def __init__(self, model_field: ModelField) -> None:
         self._model_field = model_field
 
@@ -76,7 +83,9 @@ class FieldInfoLike:
         return getattr(self._model_field, key)
 
 
-class FieldInfoMap(Mapping[str, Any]):
+class FieldInfoMap(Mapping[str, FieldInfoLike]):
+    """Adaptor between v1 __fields__ and v2 model_field."""
+
     def __init__(self, fields: dict[str, ModelField]) -> None:
         self._fields = fields
 
@@ -97,6 +106,8 @@ class FieldInfoMap(Mapping[str, Any]):
 
 
 class DictLike(Mapping[str, Any]):
+    """Provide dict-like interface to an object."""
+
     def __init__(self, obj: Any) -> None:
         self._obj = obj
 

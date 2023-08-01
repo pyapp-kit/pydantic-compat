@@ -27,7 +27,7 @@ dependencies = ["pydantic"]
 
 
 [tool.hatch.envs.default]
-dependencies = ["pytest", "pytest-cov"]
+dependencies = ["pytest", "pytest-cov", "pdbpp"]
 
 [tool.hatch.envs.test]
 
