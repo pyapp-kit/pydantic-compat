@@ -46,6 +46,9 @@ jobs:
 
       - name: Test
         run: hatch run test:test-cov-xml
+        env:
+          # if github.event_name == 'schedule' we want to test the --pre release
+          PIP_PRE: ${{ github.event_name == 'schedule' }}
 
       # If something goes wrong, we can open an issue in the repo
       - name: Report --pre Failures
