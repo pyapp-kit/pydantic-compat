@@ -27,7 +27,13 @@ dynamic = ["version"]
 dependencies = ["pydantic", "importlib_metadata; python_version<'3.8'"]
 
 [tool.hatch.envs.default]
-dependencies = ["pytest", "pytest-cov", "pdbpp", "rich"]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+    "pdbpp",
+    "rich",
+    "importlib_metadata; python_version<'3.8'",
+]
 
 [tool.hatch.envs.test]
 
@@ -45,6 +51,7 @@ matrix.pydantic.extra-dependencies = [
     { value = "pydantic<2.0", if = ["v1"] },
     { value = "pydantic>=2.0", if = ["v2"] },
 ]
+
 
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
