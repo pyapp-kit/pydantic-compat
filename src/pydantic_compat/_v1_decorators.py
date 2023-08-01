@@ -72,6 +72,8 @@ def root_validator(
     def _inner(_func: Callable):
         func = _func
         if construct_object and not pre:
+            if isinstance(_func, classmethod):
+                _func = _func.__func__
 
             @wraps(_func)
             def func(cls, *args, **kwargs):

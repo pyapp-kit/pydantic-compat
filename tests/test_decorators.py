@@ -109,6 +109,7 @@ def test_v1_root_validator_with_construct():
 def test_v2_model_validator():
     mock_before = Mock()
     mock_after = Mock()
+    mock_after_cm = Mock()
 
     class Model(PydanticCompatMixin, pydantic.BaseModel):
         x: int = 1
@@ -123,7 +124,15 @@ def test_v2_model_validator():
             mock_after(v)
             return v
 
+        # this also needs to work
+        @model_validator(mode="after")
+        @classmethod
+        def _validate_x_after_cm(cls, v):
+            mock_after_cm(v)
+            return v
+
     m = Model(x="2")
     mock_before.assert_called_once_with({"x": "2"})
     mock_after.assert_called_once_with(m)
+    mock_after_cm.assert_called_once_with(m)
     assert m.x == 2
