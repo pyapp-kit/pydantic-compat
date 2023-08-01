@@ -4,7 +4,7 @@ from typing import Any, Callable
 
 import pydantic.version
 
-if int(pydantic.version.VERSION[0]) <= 1:
+if int(pydantic.version.VERSION[0]) <= 1:  # pragma: no cover
     raise ImportError("pydantic_compat._v2 only supports pydantic v2.x")
 
 import warnings

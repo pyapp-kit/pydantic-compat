@@ -1,11 +1,11 @@
 from __future__ import annotations
-import sys
 
+import sys
 from typing import TYPE_CHECKING, Any, Iterator, Mapping, TypeVar
 
 import pydantic.version
 
-if not pydantic.version.VERSION.startswith("1"):
+if not pydantic.version.VERSION.startswith("1"):  # pragma: no cover
     raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
 
 from pydantic import BaseModel
