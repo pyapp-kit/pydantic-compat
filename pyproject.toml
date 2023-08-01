@@ -26,7 +26,7 @@ dynamic = ["version"]
 dependencies = ["pydantic"]
 
 [tool.hatch.envs.default]
-dependencies = ["pytest", "pytest-cov", "pdbpp"]
+dependencies = ["pytest", "pytest-cov", "pdbpp", "rich"]
 
 [tool.hatch.envs.test]
 

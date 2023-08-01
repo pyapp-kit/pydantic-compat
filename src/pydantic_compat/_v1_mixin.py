@@ -8,28 +8,51 @@ import pydantic.version
 if not pydantic.version.VERSION.startswith("1"):  # pragma: no cover
     raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
 
-from pydantic import BaseModel
+from pydantic import main
 
-from ._shared import _check_mixin_order
+from ._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
 
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
-    BM = TypeVar("BM", bound=BaseModel)
+    BM = TypeVar("BM", bound=main.BaseModel)
 
 
 if sys.version_info < (3, 9):
-    from pydantic import main
 
     def _get_fields(obj) -> dict[str, Any]:
         return obj.__fields__
 
     main.ModelMetaclass.model_fields = property(_get_fields)
 
+REVERSE_CONFIG_NAME_MAP = {v: k for k, v in V2_RENAMED_CONFIG_KEYS.items()}
 
-class PydanticCompatMixin:
+
+def _convert_config(config_dict: dict) -> type:
+    deprecated_renamed_keys = REVERSE_CONFIG_NAME_MAP.keys() & config_dict.keys()
+    for k in sorted(deprecated_renamed_keys):
+        config_dict[REVERSE_CONFIG_NAME_MAP[k]] = config_dict.pop(k)
+
+    return type("Config", (), config_dict)
+
+
+class _MixinMeta(main.ModelMetaclass):
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        if "model_config" in namespace and isinstance(namespace["model_config"], dict):
+            namespace["Config"] = _convert_config(namespace.pop("model_config"))
+
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class PydanticCompatMixin(metaclass=_MixinMeta):
+    @classmethod
+    def __try_update_forward_refs__(cls, **localns: Any) -> None:
+        sup = super()
+        if hasattr(sup, "__try_update_forward_refs__"):
+            sup.__try_update_forward_refs__(**localns)
+
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        _check_mixin_order(cls, PydanticCompatMixin, BaseModel)
+        _check_mixin_order(cls, PydanticCompatMixin, main.BaseModel)
 
     def model_dump(self: BM, *args: Any, **kwargs: Any) -> Any:
         return self.dict(*args, **kwargs)

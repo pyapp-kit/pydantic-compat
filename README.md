@@ -120,5 +120,4 @@ pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
 ## TODO:
 
 - `Field()` objects
-- `BaseConfig` objects
 - Serialization decorators

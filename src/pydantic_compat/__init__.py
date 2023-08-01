@@ -25,20 +25,20 @@ from ._shared import PYDANTIC2
 if TYPE_CHECKING:
     from pydantic import field_validator, model_validator, root_validator, validator
 
-    from ._v2 import PydanticCompatMixin
+    from ._v2_mixin import PydanticCompatMixin
 
 elif PYDANTIC2:
     from pydantic import field_validator, model_validator
 
-    from ._v2 import PydanticCompatMixin
     from ._v2_decorators import root_validator, validator
+    from ._v2_mixin import PydanticCompatMixin
 
 else:
     from pydantic import validator  # type: ignore
 
-    from ._v1 import PydanticCompatMixin  # type: ignore
     from ._v1_decorators import (  # type: ignore
         field_validator,
         model_validator,
         root_validator,
     )
+    from ._v1_mixin import PydanticCompatMixin  # type: ignore

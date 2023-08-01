@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import pydantic
 import pytest
 
@@ -79,3 +81,40 @@ def test_mixin_order():
 
     class Model2(PydanticCompatMixin, pydantic.BaseModel):
         x: int = 1
+
+
+V2Config = {"populate_by_name": True, "extra": "forbid", "frozen": True}
+
+
+class V1Config:
+    allow_population_by_field_name = True
+    extra = "forbid"
+    frozen = True
+    json_encoders: ClassVar[dict] = {}
+
+
+@pytest.mark.parametrize("config", [V1Config, V2Config])
+def test_config(config):
+    class Model1(PydanticCompatMixin, pydantic.BaseModel):
+        name: str = pydantic.Field(alias="full_name")
+
+    # to make sure that populate_by_name is working
+    with pytest.raises((ValueError, TypeError)):  # (v1, v2)
+        m = Model1(name="John")
+
+    class Model(PydanticCompatMixin, pydantic.BaseModel):
+        name: str = pydantic.Field(alias="full_name")
+        if isinstance(config, dict):
+            model_config = config
+        else:
+            Config = config
+
+    m = Model(name="John")
+
+    # test frozen
+    with pytest.raises((ValueError, TypeError)):  # (v1, v2)
+        m.name = "Sue"
+
+    # test extra
+    with pytest.raises((ValueError, TypeError)):  # (v1, v2)
+        Model(extra=1)

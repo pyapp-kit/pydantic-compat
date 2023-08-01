@@ -5,17 +5,40 @@ import pydantic.version
 if int(pydantic.version.VERSION[0]) <= 1:  # pragma: no cover
     raise ImportError("pydantic_compat._v2 only supports pydantic v2.x")
 
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from pydantic._internal import _model_construction
 
-from ._shared import _check_mixin_order
+from ._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
 
 if TYPE_CHECKING:
     BM = TypeVar("BM", bound=BaseModel)
 
 
-class PydanticCompatMixin:
+def _convert_config(config: type) -> ConfigDict:
+    config_dict = {k: getattr(config, k) for k in dir(config) if not k.startswith("__")}
+
+    deprecated_renamed_keys = V2_RENAMED_CONFIG_KEYS.keys() & config_dict.keys()
+    for k in sorted(deprecated_renamed_keys):
+        config_dict[V2_RENAMED_CONFIG_KEYS[k]] = config_dict.pop(k)
+
+    # leave these here for now to warn about lost functionality
+    # deprecated_removed_keys = V2_REMOVED_CONFIG_KEYS & config_dict.keys()
+    # for k in sorted(deprecated_removed_keys):
+    #     config_dict.pop(k)
+
+    return cast(ConfigDict, config_dict)
+
+
+class _MixinMeta(_model_construction.ModelMetaclass):
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        if "Config" in namespace and isinstance(namespace["Config"], type):
+            namespace["model_config"] = _convert_config(namespace.pop("Config"))
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class PydanticCompatMixin(metaclass=_MixinMeta):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         _check_mixin_order(cls, PydanticCompatMixin, BaseModel)
         # the deprecation warning is on the metaclass
