@@ -76,11 +76,14 @@ def root_validator(
                 _func = _func.__func__
 
             @wraps(_func)
-            def func(cls, *args, **kwargs):
+            def func(cls: type[pydantic.BaseModel], *args, **kwargs):
                 arg0, *rest = args
+                # cast dict to model to match the v2 model_validator signature
+                # using construct because it should already be valid
                 new_args = (cls.construct(**arg0), *rest)
-                result = _func(cls, *new_args, **kwargs)
-                return result.dict()
+                result: pydantic.BaseModel= _func(cls, *new_args, **kwargs)
+                # cast back to dict of field -> value
+                return {k: getattr(result, k) for k in result.__fields__}
 
         return pydantic.root_validator(
             func, pre=pre, allow_reuse=allow_reuse, skip_on_failure=skip_on_failure
