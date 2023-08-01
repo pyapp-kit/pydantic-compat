@@ -36,8 +36,9 @@ def field_validator(
     return pydantic.validator(
         _field,
         *fields,
-        check_fields=bool(check_fields),
         pre=(mode in ("before")),
+        always=True,  # should it be?
+        check_fields=bool(check_fields),
         allow_reuse=True,
     )
 
