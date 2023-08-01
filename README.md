@@ -41,9 +41,15 @@ wish to support pydantic1 without your users seeing deprecation warnings,
 then you need to do a lot of name adaptation depending on the runtime
 pydantic version. This package does that for you.
 
-It does *not* do any significantly complex translation of API logic.
+It does _not_ do any significantly complex translation of API logic.
 For custom types, you will still likely need to add class methods to
 support both versions of pydantic.
+
+It also does not prevent you from needing to know a what's changing
+under the hood in pydantic 2. You should be running tests on both
+versions of pydantic to ensure your library works as expected. This
+library just makes it much easier to support both versions in a single
+codebase without a lot of ugly conditionals and boilerplate.
 
 ## Usage
 
@@ -56,6 +62,9 @@ from pydantic_compat import model_validator  # or 'root_validator'
 class MyModel(PydanticCompatMixin, BaseModel):
     x: int
     y: int = 2
+
+    # prefer v2 dict, but v1 class Config is supported
+    model_config = {'frozen': True}
 
     @field_validator('x', mode='after')
     def _check_x(cls, v):
