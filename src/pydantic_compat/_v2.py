@@ -67,3 +67,7 @@ class PydanticCompatMixin:
     @property
     def __fields__(cls: type[BM]) -> dict[str, Any]:
         return cls.model_fields
+
+    @property
+    def __fields_set__(self, obj: BM) -> set[str]:
+        return obj.model_fields_set

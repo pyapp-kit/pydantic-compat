@@ -1,7 +1,8 @@
-from typing import Any, TypeVar
+from typing import Any, Iterator, Mapping, TypeVar
 
 import pydantic.version
 from pydantic import BaseModel
+from pydantic.fields import ModelField
 
 from ._shared import _check_mixin_order
 
@@ -46,5 +47,70 @@ class PydanticCompatMixin:
 
     @classmethod
     @property
-    def model_fields(cls: type[BM]) -> dict[str, Any]:
-        return cls.__fields__
+    def model_fields(cls: type[BM]) -> Mapping[str, Any]:
+        return FieldInfoMap(cls.__fields__)
+
+    @property
+    def model_fields_set(self, obj: BM) -> set[str]:
+        return obj.__fields_set__
+
+    @classmethod
+    @property
+    def model_config(cls: type[BM]) -> Mapping[str, Any]:
+        return DictLike(cls.__config__)
+
+
+class FieldInfoLike:
+    def __init__(self, model_field: ModelField) -> None:
+        self._model_field = model_field
+
+    @property
+    def annotation(self):
+        return self._model_field.outer_type_
+
+    @property
+    def frozen(self):
+        return not self._model_field.field_info.allow_mutation
+
+    def __getattr__(self, key: str):
+        return getattr(self._model_field, key)
+
+
+class FieldInfoMap(Mapping[str, Any]):
+    def __init__(self, fields: dict[str, ModelField]) -> None:
+        self._fields = fields
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self[key] if key in self._fields else default
+
+    def __getitem__(self, key: str) -> FieldInfoLike:
+        return FieldInfoLike(self._fields[key])
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self._fields[key] = value
+
+    def __iter__(self) -> Iterator[str]:
+        yield from self._fields
+
+    def __len__(self) -> int:
+        return len(self._fields)
+
+
+class DictLike(Mapping[str, Any]):
+    def __init__(self, obj: Any) -> None:
+        self._obj = obj
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return getattr(self._obj, key, default)
+
+    def __getitem__(self, key: str) -> Any:
+        return getattr(self._obj, key)
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        setattr(self._obj, key, value)
+
+    def __iter__(self) -> Iterator[str]:
+        yield from self._obj.__dict__
+
+    def __len__(self) -> int:
+        return len(self._obj.__dict__)
