@@ -24,7 +24,7 @@ classifiers = [
     "Framework :: Pydantic",
 ]
 dynamic = ["version"]
-dependencies = ["pydantic"]
+dependencies = ["pydantic", "importlib_metadata; python_version<'3.8'"]
 
 [tool.hatch.envs.default]
 dependencies = ["pytest", "pytest-cov", "pdbpp", "rich"]
