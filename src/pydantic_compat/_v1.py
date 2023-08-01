@@ -47,19 +47,19 @@ class PydanticCompatMixin:
         return cls.parse_raw(*args, **kwargs)
 
     @classmethod
-    def model_rebuild(cls: type[BM], force=True, **kwargs: Any) -> None:
+    def model_rebuild(cls: type[BM], force: bool = True, **kwargs: Any) -> None:
         return cls.update_forward_refs(**kwargs)
 
-    @classmethod
+    @classmethod  # type: ignore
     @property
     def model_fields(cls: type[BM]) -> Mapping[str, Any]:
         return FieldInfoMap(cls.__fields__)
 
     @property
     def model_fields_set(self: BM) -> set[str]:
-        return self.__fields_set__
+        return self.__fields_set__  # type: ignore
 
-    @classmethod
+    @classmethod  # type: ignore
     @property
     def model_config(cls: type[BM]) -> Mapping[str, Any]:
         return DictLike(cls.__config__)
@@ -72,14 +72,14 @@ class FieldInfoLike:
         self._model_field = model_field
 
     @property
-    def annotation(self):
+    def annotation(self) -> Any:
         return self._model_field.outer_type_
 
     @property
-    def frozen(self):
+    def frozen(self) -> bool:
         return not self._model_field.field_info.allow_mutation
 
-    def __getattr__(self, key: str):
+    def __getattr__(self, key: str) -> Any:
         return getattr(self._model_field, key)
 
 
