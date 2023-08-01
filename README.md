@@ -16,7 +16,7 @@ pydantic they need. But for libraries that want to exist in a broader
 environment, pinning to a specific version of pydantic is not always an option
 (as it limits the ability to co-exist with other libraries).
 
-This package provides compatibility mixins and function adaptors for pydantic
+This package provides (unofficial) compatibility mixins and function adaptors for pydantic
 v1-v2 cross compatibility. It allows you to use either v1 or v2 API names,
 regardless of the pydantic version installed. (Prefer using v2 names when possible)
 
