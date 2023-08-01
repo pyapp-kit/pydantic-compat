@@ -11,7 +11,7 @@ if not pydantic.version.VERSION.startswith("1"):
 import pydantic
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
 
 
 # V2 signature
