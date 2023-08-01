@@ -1,6 +1,10 @@
 """CompatibilityMixin for pydantic v1/1/v2."""
 
-from importlib.metadata import PackageNotFoundError, version
+try:
+    from importlib.metadata import PackageNotFoundError, version
+except ImportError:
+    from importlib_metadata import PackageNotFoundError, version
+
 from typing import TYPE_CHECKING
 
 try:

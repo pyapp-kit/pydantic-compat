@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 name = "pydantic-compat"
 description = "Compatibility layer for pydantic v1/v2"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.7"
 license = { text = "BSD 3-Clause License" }
 authors = [{ email = "talley.lambert@gmail.com", name = "Talley Lambert" }]
 classifiers = [
@@ -16,6 +16,7 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -26,7 +27,13 @@ dynamic = ["version"]
 dependencies = ["pydantic", "importlib_metadata; python_version<'3.8'"]
 
 [tool.hatch.envs.default]
-dependencies = ["pytest", "pytest-cov", "pdbpp", "rich"]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+    "pdbpp",
+    "rich",
+    "importlib_metadata; python_version<'3.8'",
+]
 
 [tool.hatch.envs.test]
 
@@ -36,7 +43,7 @@ test-cov = "pytest -v --cov --cov-report=term-missing"
 test-cov-xml = "pytest -v --color=yes --cov --cov-report=xml --cov-append"
 
 [[tool.hatch.envs.test.matrix]]
-# python = ["3.8", "3.11"] # good for local, too verbose for CI
+# python = ["3.7", "3.11"] # good for local, too verbose for CI
 pydantic = ["v1", "v2"]
 
 [tool.hatch.envs.test.overrides]
@@ -44,6 +51,7 @@ matrix.pydantic.extra-dependencies = [
     { value = "pydantic<2.0", if = ["v1"] },
     { value = "pydantic>=2.0", if = ["v2"] },
 ]
+
 
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
@@ -80,7 +88,7 @@ sources = ["src"]
 # https://github.com/charliermarsh/ruff
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py37"
 src = ["src"]
 # https://beta.ruff.rs/docs/rules/
 select = [
