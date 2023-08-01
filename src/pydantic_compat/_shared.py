@@ -1,6 +1,10 @@
 import contextlib
 import warnings
 
+from pydantic import version
+
+PYDANTIC2 = version.VERSION.startswith("2")
+
 
 def _check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
     """Warn if mixin_class appears after base_model in cls.__bases__."""

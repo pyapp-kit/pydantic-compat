@@ -8,9 +8,9 @@ except PackageNotFoundError:
 
 __author__ = "Talley Lambert"
 __email__ = "talley.lambert@gmail.com"
-__all__ = ["PydanticCompatMixin", "__version__"]
+__all__ = ["PydanticCompatMixin", "__version__", "PYDANTIC2"]
 
-from ._util import PYDANTIC2
+from ._shared import PYDANTIC2
 
 if PYDANTIC2:
     from ._v2 import PydanticCompatMixin
