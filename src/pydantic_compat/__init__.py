@@ -29,7 +29,10 @@ from ._shared import PYDANTIC2
 if TYPE_CHECKING:
     from pydantic import field_validator, model_validator, root_validator, validator
 
-    from ._v2_mixin import PydanticCompatMixin
+    # using this to avoid breaking pydantic mypy plugin
+    # not that it will be hard to provide proper names AND proper signatures for
+    # both versions of pydantic without a ton of potentially outdated signatures
+    PydanticCompatMixin = type
 
 elif PYDANTIC2:
     from pydantic import field_validator, model_validator
