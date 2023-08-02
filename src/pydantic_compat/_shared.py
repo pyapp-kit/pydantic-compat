@@ -1,9 +1,11 @@
 import contextlib
 import warnings
+from typing import Any
 
-from pydantic import version
+import pydantic
+import pydantic.version
 
-PYDANTIC2 = version.VERSION.startswith("2")
+PYDANTIC2 = pydantic.version.VERSION.startswith("2")
 
 V2_REMOVED_CONFIG_KEYS = {
     "allow_mutation",
@@ -84,3 +86,9 @@ def clean_field_kwargs(kwargs: dict) -> dict:
             "it works in v1 and v2."
         )
     return kwargs
+
+
+def Field(*args: Any, **kwargs: Any) -> Any:
+    kwargs = clean_field_kwargs(kwargs)
+    kwargs = move_field_kwargs(kwargs)
+    return pydantic.Field(*args, **kwargs)

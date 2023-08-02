@@ -42,22 +42,24 @@ if TYPE_CHECKING:
     # AND proper signatures for both versions of pydantic without a ton of potentially
     # outdated signatures
     PydanticCompatMixin = type
-
-elif PYDANTIC2:
-    from pydantic import field_validator, model_validator
-
-    from ._v2 import Field, PydanticCompatMixin, root_validator, validator
-
 else:
-    from pydantic import validator
+    from ._shared import Field
 
-    from ._v1 import (
-        Field,
-        PydanticCompatMixin,
-        field_validator,
-        model_validator,
-        root_validator,
-    )
+    if PYDANTIC2:
+        from pydantic import field_validator, model_validator
+
+        from ._v2 import PydanticCompatMixin, root_validator, validator
+
+    else:
+        from pydantic import validator
+
+        from ._v1 import (
+            PydanticCompatMixin,
+            field_validator,
+            model_validator,
+            root_validator,
+        )
+
 
 import pydantic
 

@@ -5,5 +5,4 @@ if int(pydantic.version.VERSION[0]) <= 1:  # pragma: no cover
 
 from .decorators import root_validator as root_validator
 from .decorators import validator as validator
-from .field import Field as Field
 from .mixin import PydanticCompatMixin as PydanticCompatMixin
