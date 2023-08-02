@@ -1,16 +1,11 @@
 from __future__ import annotations
 
-import pydantic.version
-
-if int(pydantic.version.VERSION[0]) <= 1:  # pragma: no cover
-    raise ImportError("pydantic_compat._v2 only supports pydantic v2.x")
-
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict
 from pydantic._internal import _model_construction
 
-from ._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
+from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
 
 if TYPE_CHECKING:
     BM = TypeVar("BM", bound=BaseModel)
@@ -32,10 +27,10 @@ def _convert_config(config: type) -> ConfigDict:
 
 
 class _MixinMeta(_model_construction.ModelMetaclass):
-    def __new__(mcs, name, bases, namespace, **kwargs):
+    def __new__(cls, name, bases, namespace, **kwargs):
         if "Config" in namespace and isinstance(namespace["Config"], type):
             namespace["model_config"] = _convert_config(namespace.pop("Config"))
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+        return super().__new__(cls, name, bases, namespace, **kwargs)
 
 
 class PydanticCompatMixin(metaclass=_MixinMeta):

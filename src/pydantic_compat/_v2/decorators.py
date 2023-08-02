@@ -1,13 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable
-
-import pydantic.version
-
-if int(pydantic.version.VERSION[0]) <= 1:  # pragma: no cover
-    raise ImportError("pydantic_compat._v2 only supports pydantic v2.x")
-
 import warnings
+from typing import Any, Callable
 
 from pydantic.deprecated import class_validators
 

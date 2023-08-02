@@ -3,14 +3,9 @@ from __future__ import annotations
 import sys
 from typing import TYPE_CHECKING, Any, Iterator, Mapping, TypeVar
 
-import pydantic.version
-
-if not pydantic.version.VERSION.startswith("1"):  # pragma: no cover
-    raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
-
 from pydantic import main
 
-from ._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
+from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
 
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
@@ -37,11 +32,11 @@ def _convert_config(config_dict: dict) -> type:
 
 
 class _MixinMeta(main.ModelMetaclass):
-    def __new__(mcs, name, bases, namespace, **kwargs):
+    def __new__(cls, name, bases, namespace, **kwargs):  # type: ignore
         if "model_config" in namespace and isinstance(namespace["model_config"], dict):
             namespace["Config"] = _convert_config(namespace.pop("model_config"))
 
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+        return super().__new__(cls, name, bases, namespace, **kwargs)
 
 
 class PydanticCompatMixin(metaclass=_MixinMeta):

@@ -3,11 +3,6 @@ from __future__ import annotations
 from functools import wraps
 from typing import TYPE_CHECKING, Callable
 
-import pydantic.version
-
-if not pydantic.version.VERSION.startswith("1"):  # pragma: no cover
-    raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
-
 import pydantic
 
 if TYPE_CHECKING:
@@ -81,7 +76,7 @@ def root_validator(
                 # cast dict to model to match the v2 model_validator signature
                 # using construct because it should already be valid
                 new_args = (cls.construct(**arg0), *rest)
-                result: pydantic.BaseModel= _func(cls, *new_args, **kwargs)
+                result: pydantic.BaseModel = _func(cls, *new_args, **kwargs)
                 # cast back to dict of field -> value
                 return {k: getattr(result, k) for k in result.__fields__}
 

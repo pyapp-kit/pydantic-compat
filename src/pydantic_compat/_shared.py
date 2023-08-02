@@ -42,3 +42,13 @@ def _check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
                 f"{mixin_class.__name__} should appear before pydantic.BaseModel",
                 stacklevel=3,
             )
+
+
+def _clean_field_kwargs(kwargs: dict) -> dict:
+    const = kwargs.pop("const", None)
+    if const is not None:
+        raise TypeError(
+            f"`const` is removed in v2, use `Literal[{const!r}]` instead, "
+            "it works in v1 and v2."
+        )
+    return kwargs
