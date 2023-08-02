@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 import pydantic
 
@@ -63,15 +63,15 @@ def root_validator(
     allow_reuse: bool = False,
     skip_on_failure: bool = False,
     construct_object: bool = False,
-) -> Callable:
-    def _inner(_func: Callable):
+) -> Callable[[Callable], Callable] | Callable[..., Any]:
+    def _inner(_func: Callable) -> Callable:
         func = _func
         if construct_object and not pre:
             if isinstance(_func, classmethod):
                 _func = _func.__func__
 
             @wraps(_func)
-            def func(cls: type[pydantic.BaseModel], *args, **kwargs):
+            def func(cls: type[pydantic.BaseModel], *args, **kwargs):  # type: ignore
                 arg0, *rest = args
                 # cast dict to model to match the v2 model_validator signature
                 # using construct because it should already be valid
@@ -80,7 +80,7 @@ def root_validator(
                 # cast back to dict of field -> value
                 return {k: getattr(result, k) for k in result.__fields__}
 
-        return pydantic.root_validator(
+        return pydantic.root_validator(  # type: ignore
             func, pre=pre, allow_reuse=allow_reuse, skip_on_failure=skip_on_failure
         )
 

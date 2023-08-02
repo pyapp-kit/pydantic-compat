@@ -1,17 +1,37 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any, Iterator, Mapping, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Mapping, Protocol
 
 from pydantic import main
 
 from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, check_mixin_order
 
 if TYPE_CHECKING:
-    from pydantic.fields import ModelField
+    from typing import Dict
 
-    BM = TypeVar("BM", bound=main.BaseModel)
+    from pydantic.fields import ModelField  # type: ignore
 
+    # fmt:off
+    class Model(Protocol):
+        def dict(self, *args: Any, **kwargs: Any) ->  Dict[str, Any]: ...  # noqa: UP006
+        def json(self, *args: Any, **kwargs: Any) -> str: ...
+        def copy(self, *args: Any, **kwargs: Any) -> Model: ...
+        @classmethod
+        def schema(cls, *args: Any, **kwargs: Any) -> Dict[str, Any]: ...  # noqa: UP006
+        @classmethod
+        def validate(cls, *args: Any, **kwargs: Any) -> Model: ...
+        @classmethod
+        def construct(cls, *args: Any, **kwargs: Any) -> Model: ...
+        @classmethod
+        def parse_raw(cls, *args: Any, **kwargs: Any) -> type[Model]: ...
+        @classmethod
+        def update_forward_refs(cls, *args: Any, **kwargs: Any) -> None: ...
+
+        __fields__: ClassVar[Dict]  # noqa: UP006
+        __fields_set__: set[str]
+        __config__: ClassVar[type]
+    # fmt:on
 
 if sys.version_info < (3, 9):
 
@@ -49,55 +69,55 @@ class PydanticCompatMixin(metaclass=_MixinMeta):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         check_mixin_order(cls, PydanticCompatMixin, main.BaseModel)
 
-    def model_dump(self: BM, *args: Any, **kwargs: Any) -> Any:
+    def model_dump(self: Model, *args: Any, **kwargs: Any) -> Any:
         return self.dict(*args, **kwargs)
 
-    def model_dump_json(self: BM, *args: Any, **kwargs: Any) -> Any:
+    def model_dump_json(self: Model, *args: Any, **kwargs: Any) -> Any:
         return self.json(*args, **kwargs)
 
-    def model_copy(self: BM, *args: Any, **kwargs: Any) -> Any:
+    def model_copy(self: Model, *args: Any, **kwargs: Any) -> Any:
         return self.copy(*args, **kwargs)
 
     @classmethod
-    def model_json_schema(cls: type[BM], *args: Any, **kwargs: Any) -> Any:
+    def model_json_schema(cls: type[Model], *args: Any, **kwargs: Any) -> Any:
         return cls.schema(*args, **kwargs)
 
     @classmethod
-    def model_validate(cls: type[BM], *args: Any, **kwargs: Any) -> Any:
+    def model_validate(cls: type[Model], *args: Any, **kwargs: Any) -> Any:
         return cls.validate(*args, **kwargs)
 
     @classmethod
-    def model_construct(cls: type[BM], *args: Any, **kwargs: Any) -> Any:
+    def model_construct(cls: type[Model], *args: Any, **kwargs: Any) -> Any:
         return cls.construct(*args, **kwargs)
 
     @classmethod
-    def model_validate_json(cls: type[BM], *args: Any, **kwargs: Any) -> Any:
+    def model_validate_json(cls: type[Model], *args: Any, **kwargs: Any) -> Any:
         return cls.parse_raw(*args, **kwargs)
 
     @classmethod
-    def model_rebuild(cls: type[BM], force: bool = True, **kwargs: Any) -> None:
+    def model_rebuild(cls: type[Model], force: bool = True, **kwargs: Any) -> None:
         return cls.update_forward_refs(**kwargs)
 
     if sys.version_info < (3, 9):
         # differences in the behavior of patching class properties in python<3.9
         @property
-        def model_fields(cls: type[BM]) -> Mapping[str, Any]:
+        def model_fields(cls: type[Model]) -> Mapping[str, Any]:
             return FieldInfoMap(cls.__fields__)
 
     else:
 
         @classmethod  # type: ignore
         @property
-        def model_fields(cls: type[BM]) -> Mapping[str, Any]:
+        def model_fields(cls: type[Model]) -> Mapping[str, Any]:
             return FieldInfoMap(cls.__fields__)
 
     @property
-    def model_fields_set(self: BM) -> set[str]:
-        return self.__fields_set__  # type: ignore
+    def model_fields_set(self: Model) -> set[str]:
+        return self.__fields_set__
 
     @classmethod  # type: ignore
     @property
-    def model_config(cls: type[BM]) -> Mapping[str, Any]:
+    def model_config(cls: type[Model]) -> Mapping[str, Any]:
         return DictLike(cls.__config__)
 
 

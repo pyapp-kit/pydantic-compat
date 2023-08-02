@@ -3,7 +3,7 @@
 try:
     from importlib.metadata import PackageNotFoundError, version
 except ImportError:
-    from importlib_metadata import PackageNotFoundError, version
+    from importlib_metadata import PackageNotFoundError, version  # type: ignore
 
 from typing import TYPE_CHECKING
 
@@ -49,7 +49,7 @@ elif PYDANTIC2:
     from ._v2 import Field, PydanticCompatMixin, root_validator, validator
 
 else:
-    from pydantic import validator  # type: ignore
+    from pydantic import validator
 
     from ._v1 import (
         Field,
