@@ -33,6 +33,7 @@ V2_RENAMED_CONFIG_KEYS = {
 V1_FIELDS_TO_V2_FIELDS = {
     "min_items": "min_length",
     "max_items": "max_length",
+    "regex": "pattern",
     "allow_mutation": "-frozen",
 }
 

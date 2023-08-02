@@ -52,13 +52,27 @@ def test_field_frozen() -> None:
         foo.bar = 2
 
 
-def test_double_usage_raises():
+@pytest.mark.parametrize("key", ["regex", "pattern"])
+def test_regex_pattern(key: str) -> None:
+    class Foo(BaseModel):
+        bar: str = Field(..., **{key: "^bar$"})  # type: ignore
+
+    with pytest.raises(ValueError):
+        Foo(bar="baz")
+
+
+@pytest.mark.parametrize(
+    "keys",
+    [
+        ("min_items", "min_length"),
+        ("max_items", "max_length"),
+        ("allow_mutation", "frozen"),
+        ("regex", "pattern"),
+    ],
+)
+def test_double_usage_raises(keys: tuple[str, str]) -> None:
     with pytest.raises(ValueError, match="Cannot specify both"):
-        Field(..., min_items=1, min_length=1)
-    with pytest.raises(ValueError, match="Cannot specify both"):
-        Field(..., max_items=1, max_length=1)
-    with pytest.raises(ValueError, match="Cannot specify both"):
-        Field(..., allow_mutation=True, frozen=True)
+        Field(..., **dict.fromkeys(keys))  # type: ignore
 
 
 # not attempting unique_items yet...
