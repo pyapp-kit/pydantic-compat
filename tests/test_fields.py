@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import ClassVar, List
 
 import pytest
 from typing_extensions import Literal
@@ -21,7 +21,7 @@ def test_field_const() -> None:
 @pytest.mark.parametrize("pre", ["min", "max"])
 def test_field_min_max_items(pre: str, post: str) -> None:
     class Foo(BaseModel):
-        bar: list[int] = Field(..., **{f"{pre}_{post}": 2})  # type: ignore
+        bar: List[int] = Field(..., **{f"{pre}_{post}": 2})  # type: ignore
 
     bad_val = [1, 2, 3] if pre == "max" else [1]
     with pytest.raises((TypeError, ValueError)):  # (v1, v2)
