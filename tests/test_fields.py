@@ -45,7 +45,7 @@ def test_field_frozen() -> None:
     # used in v2
     class Foo(BaseModel):
         bar: int = Field(default=1, frozen=True)
-        model_config: ClassVar[dict] = {"validate_assignment": True}
+        model_config: ClassVar[dict] = {"validate_assignment": True}  # type: ignore
 
     foo = Foo()
     with pytest.raises((TypeError, ValueError)):  # (v1, v2)
@@ -57,6 +57,7 @@ def test_regex_pattern(key: str) -> None:
     class Foo(BaseModel):
         bar: str = Field(..., **{key: "^bar$"})  # type: ignore
 
+    Foo(bar="bar")
     with pytest.raises(ValueError):
         Foo(bar="baz")
 
