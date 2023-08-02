@@ -61,7 +61,7 @@ def root_validator(
         warnings.simplefilter("ignore", DeprecationWarning)
 
         # def model_validator( *, mode: Literal['wrap', 'before', 'after']) -> Any:
-        return class_validators.root_validator(  # type: ignore
+        return class_validators.root_validator(  # type: ignore [call-overload]
             *_args,
             pre=pre,
             skip_on_failure=bool(skip_on_failure),

@@ -106,7 +106,7 @@ class PydanticCompatMixin(metaclass=_MixinMeta):
 
     else:
 
-        @classmethod  # type: ignore
+        @classmethod  # type: ignore [misc]
         @property
         def model_fields(cls: type[Model]) -> Mapping[str, Any]:
             return FieldInfoMap(cls.__fields__)
@@ -115,7 +115,7 @@ class PydanticCompatMixin(metaclass=_MixinMeta):
     def model_fields_set(self: Model) -> set[str]:
         return self.__fields_set__
 
-    @classmethod  # type: ignore
+    @classmethod  # type: ignore [misc]
     @property
     def model_config(cls: type[Model]) -> Mapping[str, Any]:
         return DictLike(cls.__config__)
