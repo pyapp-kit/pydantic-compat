@@ -37,7 +37,7 @@ you need.
 
 Not much! :joy:
 
-Mostly serves to translate names from one API to another. It backports
+Mostly it serves to translate names from one API to another. It backports
 the v2 API to v1 (so you can v2 names in a pydantic1 runtime),
 and forwards the v1 API to v2 (so you can use v1 names in a v2 runtime
 without deprecation warnings).
