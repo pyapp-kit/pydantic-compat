@@ -46,7 +46,7 @@ for k, v in V1_FIELDS_TO_V2_FIELDS.items():
         k = f"-{k}"
     V2_FIELDS_TO_V1_FIELDS[v] = k
 
-NAME_MAP = V1_FIELDS_TO_V2_FIELDS if PYDANTIC2 else V2_FIELDS_TO_V1_FIELDS
+FIELD_NAME_MAP = V1_FIELDS_TO_V2_FIELDS if PYDANTIC2 else V2_FIELDS_TO_V1_FIELDS
 
 
 def check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
@@ -64,7 +64,7 @@ def check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
 
 def move_field_kwargs(kwargs: dict) -> dict:
     """Move Field(...) kwargs from v1 to v2 and vice versa."""
-    for old_name, new_name in NAME_MAP.items():
+    for old_name, new_name in FIELD_NAME_MAP.items():
         negate = False
         if new_name.startswith("-"):
             new_name = new_name[1:]
@@ -89,6 +89,7 @@ def clean_field_kwargs(kwargs: dict) -> dict:
 
 
 def Field(*args: Any, **kwargs: Any) -> Any:
+    """Create a field for objects that can be configured."""
     kwargs = clean_field_kwargs(kwargs)
     kwargs = move_field_kwargs(kwargs)
     return pydantic.Field(*args, **kwargs)
