@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Iterator, Mapping, TypeVar
 
 from pydantic import main
 
-from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
+from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, check_mixin_order
 
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
@@ -47,7 +47,7 @@ class PydanticCompatMixin(metaclass=_MixinMeta):
             sup.__try_update_forward_refs__(**localns)
 
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        _check_mixin_order(cls, PydanticCompatMixin, main.BaseModel)
+        check_mixin_order(cls, PydanticCompatMixin, main.BaseModel)
 
     def model_dump(self: BM, *args: Any, **kwargs: Any) -> Any:
         return self.dict(*args, **kwargs)

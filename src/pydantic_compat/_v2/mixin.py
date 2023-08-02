@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from pydantic import BaseModel, ConfigDict
 from pydantic._internal import _model_construction
 
-from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, _check_mixin_order
+from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, check_mixin_order
 
 if TYPE_CHECKING:
     BM = TypeVar("BM", bound=BaseModel)
@@ -35,7 +35,7 @@ class _MixinMeta(_model_construction.ModelMetaclass):
 
 class PydanticCompatMixin(metaclass=_MixinMeta):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        _check_mixin_order(cls, PydanticCompatMixin, BaseModel)
+        check_mixin_order(cls, PydanticCompatMixin, BaseModel)
         # the deprecation warning is on the metaclass
         type(cls).__fields__ = property(lambda cls: cls.model_fields)
 

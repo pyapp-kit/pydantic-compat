@@ -30,8 +30,23 @@ V2_RENAMED_CONFIG_KEYS = {
     "validate_all": "validate_default",
 }
 
+V1_FIELDS_TO_V2_FIELDS = {
+    "min_items": "min_length",
+    "max_items": "max_length",
+    "allow_mutation": "-frozen",
+}
 
-def _check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
+V2_FIELDS_TO_V1_FIELDS = {}
+for k, v in V1_FIELDS_TO_V2_FIELDS.items():
+    if v.startswith("-"):
+        v = v[1:]
+        k = f"-{k}"
+    V2_FIELDS_TO_V1_FIELDS[v] = k
+
+NAME_MAP = V1_FIELDS_TO_V2_FIELDS if PYDANTIC2 else V2_FIELDS_TO_V1_FIELDS
+
+
+def check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
     """Warn if mixin_class appears after base_model in cls.__bases__."""
     bases = cls.__bases__
     with contextlib.suppress(ValueError):
@@ -44,7 +59,23 @@ def _check_mixin_order(cls: type, mixin_class: type, base_model: type) -> None:
             )
 
 
-def _clean_field_kwargs(kwargs: dict) -> dict:
+def move_field_kwargs(kwargs: dict) -> dict:
+    """Move Field(...) kwargs from v1 to v2 and vice versa."""
+    for old_name, new_name in NAME_MAP.items():
+        negate = False
+        if new_name.startswith("-"):
+            new_name = new_name[1:]
+            negate = True
+        if old_name in kwargs:
+            if new_name in kwargs:
+                raise ValueError(f"Cannot specify both {old_name} and {new_name}")
+            val = not kwargs.pop(old_name) if negate else kwargs.pop(old_name)
+            kwargs[new_name] = val
+    return kwargs
+
+
+def clean_field_kwargs(kwargs: dict) -> dict:
+    """Remove outdated Field(...) kwargs."""
     const = kwargs.pop("const", None)
     if const is not None:
         raise TypeError(

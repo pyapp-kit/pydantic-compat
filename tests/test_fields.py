@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import ClassVar, Literal
 
 import pytest
 
@@ -7,7 +7,7 @@ from pydantic_compat import BaseModel, Field
 
 def test_field_const() -> None:
     with pytest.raises(TypeError, match="use `Literal\\['bar'\\]` instead"):
-        Field(..., const="bar")
+        Field(..., const="bar")  # type: ignore
 
     class Foo(BaseModel):
         bar: Literal["bar"] = "bar"
@@ -44,8 +44,17 @@ def test_field_frozen() -> None:
     # used in v2
     class Foo(BaseModel):
         bar: int = Field(default=1, frozen=True)
-        model_config = {"validate_assignment": True}
+        model_config: ClassVar[dict] = {"validate_assignment": True}
 
     foo = Foo()
     with pytest.raises((TypeError, ValueError)):  # (v1, v2)
         foo.bar = 2
+
+
+# def test_double_usage_raises():
+#     with pytest.raises(ValueError, match="Cannot specify both"):
+#         Field(..., min_items=1, min_length=1)
+#     with pytest.raises(ValueError, match="Cannot specify both"):
+#         Field(..., max_items=1, max_length=1)
+#     with pytest.raises(ValueError, match="Cannot specify both"):
+#         Field(..., allow_mutation=True, frozen=True)
