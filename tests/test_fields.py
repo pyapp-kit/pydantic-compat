@@ -59,3 +59,16 @@ def test_double_usage_raises():
         Field(..., max_items=1, max_length=1)
     with pytest.raises(ValueError, match="Cannot specify both"):
         Field(..., allow_mutation=True, frozen=True)
+
+
+# not attempting unique_items yet...
+# see https://github.com/pydantic/pydantic-core/issues/296
+# @pytest.mark.skipif(
+#     pydantic.version.VERSION.startswith("1.8"),
+#     reason="pydantic 1.8 does not support unique_items",
+# )
+# def test_unique_items() -> None:
+#     class Foo(BaseModel):
+#         bar: List[int] = Field(..., unique_items=True)
+#     with pytest.raises(ValueError):
+#         Foo(bar=[1, 2, 3, 1])

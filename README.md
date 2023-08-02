@@ -18,7 +18,9 @@ environment, pinning to a specific version of pydantic is not always an option
 
 This package provides (unofficial) compatibility mixins and function adaptors for pydantic
 v1-v2 cross compatibility. It allows you to use either v1 or v2 API names,
-regardless of the pydantic version installed. (Prefer using v2 names when possible)
+regardless of the pydantic version installed. (Prefer using v2 names when possible).
+
+Tests are run on Pydantic v1.8 and up
 
 The API conversion is not exhaustive, but suffices for many of the use cases
 I have come across. I will be using it in:
@@ -101,8 +103,11 @@ pydantic version installed (without deprecation warnings):
 
 ## Field notes
 
-- don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
+- Don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
   it works in both v1 and v2
+- No attempt is made to convert between v1's `unique_items` and v2's `Set[]`
+  semantics. See <https://github.com/pydantic/pydantic-core/issues/296> for
+  discussion.
 
 ## API rules
 
