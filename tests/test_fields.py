@@ -1,6 +1,7 @@
-from typing import ClassVar, Literal
+from typing import ClassVar
 
 import pytest
+from typing_extensions import Literal
 
 from pydantic_compat import BaseModel, Field
 
@@ -51,10 +52,10 @@ def test_field_frozen() -> None:
         foo.bar = 2
 
 
-# def test_double_usage_raises():
-#     with pytest.raises(ValueError, match="Cannot specify both"):
-#         Field(..., min_items=1, min_length=1)
-#     with pytest.raises(ValueError, match="Cannot specify both"):
-#         Field(..., max_items=1, max_length=1)
-#     with pytest.raises(ValueError, match="Cannot specify both"):
-#         Field(..., allow_mutation=True, frozen=True)
+def test_double_usage_raises():
+    with pytest.raises(ValueError, match="Cannot specify both"):
+        Field(..., min_items=1, min_length=1)
+    with pytest.raises(ValueError, match="Cannot specify both"):
+        Field(..., max_items=1, max_length=1)
+    with pytest.raises(ValueError, match="Cannot specify both"):
+        Field(..., allow_mutation=True, frozen=True)
