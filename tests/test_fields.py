@@ -1,4 +1,4 @@
-from typing import ClassVar, List
+from typing import ClassVar, List, Tuple
 
 import pytest
 from typing_extensions import Literal
@@ -71,7 +71,7 @@ def test_regex_pattern(key: str) -> None:
         ("regex", "pattern"),
     ],
 )
-def test_double_usage_raises(keys: tuple[str, str]) -> None:
+def test_double_usage_raises(keys: Tuple[str, str]) -> None:
     with pytest.raises(ValueError, match="Cannot specify both"):
         Field(..., **dict.fromkeys(keys))  # type: ignore
 
