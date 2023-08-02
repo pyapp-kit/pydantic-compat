@@ -18,7 +18,9 @@ environment, pinning to a specific version of pydantic is not always an option
 
 This package provides (unofficial) compatibility mixins and function adaptors for pydantic
 v1-v2 cross compatibility. It allows you to use either v1 or v2 API names,
-regardless of the pydantic version installed. (Prefer using v2 names when possible)
+regardless of the pydantic version installed. (Prefer using v2 names when possible).
+
+Tests are run on Pydantic v1.8 and up
 
 The API conversion is not exhaustive, but suffices for many of the use cases
 I have come across. I will be using it in:
@@ -35,11 +37,15 @@ you need.
 
 Not much! :joy:
 
-Mostly serves to translate names from one API to another. While
-pydantic2 does offer deprecated access to the v1 API, if you explicitly
-wish to support pydantic1 without your users seeing deprecation warnings,
-then you need to do a lot of name adaptation depending on the runtime
-pydantic version. This package does that for you.
+Mostly it serves to translate names from one API to another. It backports
+the v2 API to v1 (so you can v2 names in a pydantic1 runtime),
+and forwards the v1 API to v2 (so you can use v1 names in a v2 runtime
+without deprecation warnings).
+
+> While pydantic2 does offer deprecated access to the v1 API, if you explicitly
+> wish to support pydantic1 without your users seeing deprecation warnings,
+> then you need to do a lot of name adaptation depending on the runtime
+> pydantic version. This package does that for you.
 
 It does _not_ do any significantly complex translation of API logic.
 For custom types, you will still likely need to add class methods to
@@ -94,6 +100,14 @@ pydantic version installed (without deprecation warnings):
 | `Model.update_forward_refs` | `Model.model_rebuild`       |
 | `Model.__fields__`          | `Model.model_fields`        |
 | `Model.__fields_set__`      | `Model.model_fields_set`    |
+
+## Field notes
+
+- Don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
+  it works in both v1 and v2
+- No attempt is made to convert between v1's `unique_items` and v2's `Set[]`
+  semantics. See <https://github.com/pydantic/pydantic-core/issues/296> for
+  discussion.
 
 ## API rules
 

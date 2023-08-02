@@ -1,12 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Callable
-
-import pydantic.version
-
-if not pydantic.version.VERSION.startswith("1"):  # pragma: no cover
-    raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
+from typing import TYPE_CHECKING, Any, Callable
 
 import pydantic
 
@@ -44,7 +39,7 @@ def field_validator(
 
 
 # V2 signature
-def model_validator(*, mode: Literal["wrap", "before", "after"]) -> Callable:
+def model_validator(*, mode: Literal["wrap", "before", "after"]) -> Any:
     """Adaptor from v2.model_validator -> v1.root_validator."""
 
     # V1 signature
@@ -68,25 +63,26 @@ def root_validator(
     allow_reuse: bool = False,
     skip_on_failure: bool = False,
     construct_object: bool = False,
-) -> Callable:
-    def _inner(_func: Callable):
+) -> Any:
+    def _inner(_func: Callable) -> Any:
         func = _func
         if construct_object and not pre:
             if isinstance(_func, classmethod):
                 _func = _func.__func__
 
             @wraps(_func)
-            def func(cls: type[pydantic.BaseModel], *args, **kwargs):
+            def func(cls: type[pydantic.BaseModel], *args: Any, **kwargs: Any) -> Any:
                 arg0, *rest = args
                 # cast dict to model to match the v2 model_validator signature
                 # using construct because it should already be valid
                 new_args = (cls.construct(**arg0), *rest)
-                result: pydantic.BaseModel= _func(cls, *new_args, **kwargs)
+                result: pydantic.BaseModel = _func(cls, *new_args, **kwargs)
                 # cast back to dict of field -> value
                 return {k: getattr(result, k) for k in result.__fields__}
 
-        return pydantic.root_validator(
-            func, pre=pre, allow_reuse=allow_reuse, skip_on_failure=skip_on_failure
+        deco = pydantic.root_validator(  # type: ignore [call-overload]
+            pre=pre, allow_reuse=allow_reuse, skip_on_failure=skip_on_failure
         )
+        return deco(func)
 
     return _inner(_func) if _func else _inner

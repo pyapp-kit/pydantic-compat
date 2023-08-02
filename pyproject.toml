@@ -43,12 +43,13 @@ test-cov = "pytest -v --cov --cov-report=term-missing"
 test-cov-xml = "pytest -v --color=yes --cov --cov-report=xml --cov-append"
 
 [[tool.hatch.envs.test.matrix]]
-# python = ["3.7", "3.11"] # good for local, too verbose for CI
-pydantic = ["v1.8", "v1", "v2"]
+# python = ["3.8", "3.11"] # good for local, too verbose for CI
+pydantic = ["v1.8", "v1.9", "v1", "v2"]
 
 [tool.hatch.envs.test.overrides]
 matrix.pydantic.extra-dependencies = [
-    { value = "pydantic==1.8.0", if = ["v1.8"] },
+    { value = "pydantic<1.9", if = ["v1.8"] },
+    { value = "pydantic<1.10", if = ["v1.9"] },
     { value = "pydantic<2.0", if = ["v1"] },
     { value = "pydantic>=2.0", if = ["v2"] },
 ]

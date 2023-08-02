@@ -1,13 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable
-
-import pydantic.version
-
-if int(pydantic.version.VERSION[0]) <= 1:  # pragma: no cover
-    raise ImportError("pydantic_compat._v2 only supports pydantic v2.x")
-
 import warnings
+from typing import Any, Callable
 
 from pydantic.deprecated import class_validators
 
@@ -67,7 +61,7 @@ def root_validator(
         warnings.simplefilter("ignore", DeprecationWarning)
 
         # def model_validator( *, mode: Literal['wrap', 'before', 'after']) -> Any:
-        return class_validators.root_validator(  # type: ignore
+        return class_validators.root_validator(  # type: ignore [call-overload]
             *_args,
             pre=pre,
             skip_on_failure=bool(skip_on_failure),
