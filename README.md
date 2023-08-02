@@ -41,9 +41,9 @@ and forwards the v1 API to v2 (so you can use v1 names in a v2 runtime
 without deprecation warnings).
 
 > While pydantic2 does offer deprecated access to the v1 API, if you explicitly
-wish to support pydantic1 without your users seeing deprecation warnings,
-then you need to do a lot of name adaptation depending on the runtime
-pydantic version. This package does that for you.
+> wish to support pydantic1 without your users seeing deprecation warnings,
+> then you need to do a lot of name adaptation depending on the runtime
+> pydantic version. This package does that for you.
 
 It does _not_ do any significantly complex translation of API logic.
 For custom types, you will still likely need to add class methods to

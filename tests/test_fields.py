@@ -16,19 +16,15 @@ def test_field_const() -> None:
         Foo(bar="baz")  # type: ignore
 
 
-def test_field_min_items() -> None:
+@pytest.mark.parametrize("post", ["items", "length"])
+@pytest.mark.parametrize("pre", ["min", "max"])
+def test_field_min_max_items(pre: str, post: str) -> None:
     class Foo(BaseModel):
-        bar: list[int] = Field(..., min_items=2)
+        bar: list[int] = Field(..., **{f"{pre}_{post}": 2})  # type: ignore
 
+    bad_val = [1, 2, 3] if pre == "max" else [1]
     with pytest.raises((TypeError, ValueError)):  # (v1, v2)
-        Foo(bar=[1])
-
-def test_field_max_items() -> None:
-    class Foo(BaseModel):
-        bar: list[int] = Field(..., max_items=2)
-
-    with pytest.raises((TypeError, ValueError)):  # (v1, v2)
-        Foo(bar=[1, 2, 3, 4])
+        Foo(bar=bad_val)
 
 
 def test_field_allow_mutation() -> None:
@@ -37,7 +33,7 @@ def test_field_allow_mutation() -> None:
         bar: int = Field(default=1, allow_mutation=False)
 
         class Config:
-            validate_assignment = True  # required for allow_mutation in v1
+            validate_assignment = True
 
     foo = Foo()
     with pytest.raises((TypeError, ValueError)):  # (v1, v2)
@@ -48,9 +44,7 @@ def test_field_frozen() -> None:
     # used in v2
     class Foo(BaseModel):
         bar: int = Field(default=1, frozen=True)
-
-        class Config:
-            validate_assignment = True  # required for allow_mutation in v1
+        model_config = {"validate_assignment": True}
 
     foo = Foo()
     with pytest.raises((TypeError, ValueError)):  # (v1, v2)

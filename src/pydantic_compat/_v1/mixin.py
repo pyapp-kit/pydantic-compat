@@ -32,7 +32,7 @@ def _convert_config(config_dict: dict) -> type:
 
 
 class _MixinMeta(main.ModelMetaclass):
-    def __new__(cls, name, bases, namespace, **kwargs):  # type: ignore
+    def __new__(cls, name, bases, namespace: dict, **kwargs):  # type: ignore
         if "model_config" in namespace and isinstance(namespace["model_config"], dict):
             namespace["Config"] = _convert_config(namespace.pop("model_config"))
 
