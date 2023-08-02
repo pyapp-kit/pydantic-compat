@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Mapping, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Iterator, Mapping
 
 from pydantic import main
 
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from typing import Dict
 
     from pydantic.fields import ModelField  # type: ignore
+    from typing_extensions import Protocol
 
     # fmt:off
     class Model(Protocol):

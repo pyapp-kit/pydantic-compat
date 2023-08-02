@@ -8,9 +8,8 @@ from pydantic._internal import _model_construction
 from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, check_mixin_order
 
 if TYPE_CHECKING:
-    from typing import Protocol
-
     from pydantic import ConfigDict
+    from typing_extensions import Protocol
 
     # fmt:off
     class Model(Protocol):
