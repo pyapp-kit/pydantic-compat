@@ -83,6 +83,7 @@ jobs:
 
       - name: install
         run: |
+          git tag
           pip install -U pip build twine
           python -m build
           twine check dist/*
