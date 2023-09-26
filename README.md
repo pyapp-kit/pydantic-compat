@@ -23,7 +23,7 @@ regardless of the pydantic version installed. (Prefer using v2 names when possib
 Tests are run on Pydantic v1.8 and up
 
 The API conversion is not exhaustive, but suffices for many of the use cases
-I have come across. I will be using it in:
+I have come across. It is in use by the following libraries:
 
 - [ome-types](https://github.com/tlambert03/ome-types)
 - [psygnal](https://github.com/pyapp-kit/psygnal)
