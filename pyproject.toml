@@ -21,7 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Framework :: Pydantic",
+    "Typing :: Typed",
 ]
 dynamic = ["version"]
 dependencies = ["pydantic", "importlib_metadata; python_version<'3.8'"]
@@ -72,8 +74,8 @@ dev = [
 ]
 
 [project.urls]
-homepage = "https://github.com/tlambert03/pydantic-compat"
-repository = "https://github.com/tlambert03/pydantic-compat"
+homepage = "https://github.com/pyapp-kit/pydantic-compat"
+repository = "https://github.com/pyapp-kit/pydantic-compat"
 
 # https://hatch.pypa.io/latest/config/metadata/
 [tool.hatch.version]
