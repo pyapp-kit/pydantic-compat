@@ -21,7 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Framework :: Pydantic",
+    "Typing :: Typed",
 ]
 dynamic = ["version"]
 dependencies = ["pydantic", "importlib_metadata; python_version<'3.8'"]
