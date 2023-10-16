@@ -101,8 +101,19 @@ pydantic version installed (without deprecation warnings):
 | `Model.__fields__`          | `Model.model_fields`        |
 | `Model.__fields_set__`      | `Model.model_fields_set`    |
 
-## Field notes
 
+
+## `Field` notes
+
+- `pydantic_compat.Field` will remove outdated fields (`const`) and translate
+  fields with new names:
+  | v1 name          | v2 name             |
+  | ---------------- | ------------------- |
+  | `min_items`      | `min_length`        |
+  | `max_items`      | `max_length`        |
+  | `regex`          | `pattern`           |
+  | `allow_mutation` | `not frozen`        |
+  | `metadata`       | `json_schema_extra` |
 - Don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
   it works in both v1 and v2
 - No attempt is made to convert between v1's `unique_items` and v2's `Set[]`
@@ -142,5 +153,4 @@ pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
 
 ## TODO:
 
-- `Field()` objects
 - Serialization decorators
