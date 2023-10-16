@@ -101,19 +101,17 @@ pydantic version installed (without deprecation warnings):
 | `Model.__fields__`          | `Model.model_fields`        |
 | `Model.__fields_set__`      | `Model.model_fields_set`    |
 
-
-
 ## `Field` notes
 
 - `pydantic_compat.Field` will remove outdated fields (`const`) and translate
   fields with new names:
-  | v1 name          | v2 name             |
+  | v1 name | v2 name |
   | ---------------- | ------------------- |
-  | `min_items`      | `min_length`        |
-  | `max_items`      | `max_length`        |
-  | `regex`          | `pattern`           |
-  | `allow_mutation` | `not frozen`        |
-  | `metadata`       | `json_schema_extra` |
+  | `min_items` | `min_length` |
+  | `max_items` | `max_length` |
+  | `regex` | `pattern` |
+  | `allow_mutation` | `not frozen` |
+  | `metadata` | `json_schema_extra` |
 - Don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
   it works in both v1 and v2
 - No attempt is made to convert between v1's `unique_items` and v2's `Set[]`
@@ -130,6 +128,19 @@ pydantic version installed (without deprecation warnings):
   of the pydantic version installed. Similarly, if you choose to use
   `pydantic_compat.validator` then the signature must match the pydantic
   (v1) `validator` signature.
+
+## `pydantic_compat.v1` escape hatch
+
+If you have v1 code that you are (gradually) updating to v2, and you find that
+pydantic_compat doesn't yet translate one of the v1 API names you are using,
+and you don't want to update your code to use the v2 name, you can fallback
+to importing from `pydantic_compat.v1`. This module is a copy of the
+`pydantic.v1` namespace that was introduced in pydantic v2:
+
+- if pydantic v1 is installed, then `pydantic_compat.v1` is an alias for
+  `pydantic`
+- if pydantic v2 is installed, then `pydantic_compat.v1` is an alias for
+  `pydantic.v1`
 
 ## Notable differences
 
