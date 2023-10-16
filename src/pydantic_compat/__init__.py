@@ -24,11 +24,9 @@ __all__ = [
     "validator",
     "Field",
     "BaseModel",
-    "v1",
 ]
 
 
-from . import v1
 from ._shared import PYDANTIC2
 
 if TYPE_CHECKING:
