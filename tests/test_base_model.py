@@ -118,3 +118,13 @@ def test_config(config):
     # test extra
     with pytest.raises((ValueError, TypeError)):  # (v1, v2)
         Model(extra=1)
+
+
+def test_v1_namespace() -> None:
+    from pydantic_compat.v1 import BaseModel
+
+    class Model(BaseModel):
+        x: int = 1
+
+    m = Model()
+    assert m.dict() == {"x": 1}  # no warning
