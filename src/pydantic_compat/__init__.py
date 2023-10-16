@@ -24,9 +24,16 @@ __all__ = [
     "validator",
     "Field",
     "BaseModel",
+    "v1",
 ]
 
+
 from ._shared import PYDANTIC2
+
+try:
+    from pydantic import v1
+except ImportError:
+    import pydantic as v1
 
 if TYPE_CHECKING:
     from pydantic import (
