@@ -26,7 +26,6 @@ __all__ = [
     "BaseModel",
 ]
 
-
 from ._shared import PYDANTIC2
 
 if TYPE_CHECKING:
