@@ -1,11 +1,11 @@
 # pydantic-compat
 
-[![GitHub](https://img.shields.io/github/license/pyapp-kit/pydantic-compat)
-](https://github.com/pyapp-kit/pydantic-compat/raw/main/LICENSE)
+[![GitHub](https://img.shields.io/github/license/tlambert03/pydantic-compat)
+](https://github.com/tlambert03/pydantic-compat/raw/main/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/pydantic-compat.svg?color=green)](https://pypi.org/project/pydantic-compat)
 [![Python Version](https://img.shields.io/pypi/pyversions/pydantic-compat.svg?color=green)](https://python.org)
-[![CI](https://github.com/pyapp-kit/pydantic-compat/actions/workflows/ci.yml/badge.svg)](https://github.com/pyapp-kit/pydantic-compat/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/pyapp-kit/pydantic-compat/branch/main/graph/badge.svg)](https://codecov.io/gh/pyapp-kit/pydantic-compat)
+[![CI](https://github.com/tlambert03/pydantic-compat/actions/workflows/ci.yml/badge.svg)](https://github.com/tlambert03/pydantic-compat/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/tlambert03/pydantic-compat/branch/main/graph/badge.svg)](https://codecov.io/gh/tlambert03/pydantic-compat)
 
 ## Motivation
 
@@ -23,7 +23,7 @@ regardless of the pydantic version installed. (Prefer using v2 names when possib
 Tests are run on Pydantic v1.8 and up
 
 The API conversion is not exhaustive, but suffices for many of the use cases
-I have come across. It is in use by the following libraries:
+I have come across. I will be using it in:
 
 - [ome-types](https://github.com/tlambert03/ome-types)
 - [psygnal](https://github.com/pyapp-kit/psygnal)
@@ -101,8 +101,18 @@ pydantic version installed (without deprecation warnings):
 | `Model.__fields__`          | `Model.model_fields`        |
 | `Model.__fields_set__`      | `Model.model_fields_set`    |
 
-## Field notes
 
+## `Field` notes
+
+- `pydantic_compat.Field` will remove outdated fields (`const`) and translate
+  fields with new names:
+  | v1 name          | v2 name             |
+  | ---------------- | ------------------- |
+  | `min_items`      | `min_length`        |
+  | `max_items`      | `max_length`        |
+  | `regex`          | `pattern`           |
+  | `allow_mutation` | `not frozen`        |
+  | `metadata`       | `json_schema_extra` |
 - Don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
   it works in both v1 and v2
 - No attempt is made to convert between v1's `unique_items` and v2's `Set[]`
@@ -119,6 +129,19 @@ pydantic version installed (without deprecation warnings):
   of the pydantic version installed. Similarly, if you choose to use
   `pydantic_compat.validator` then the signature must match the pydantic
   (v1) `validator` signature.
+
+## `pydantic_compat.v1` escape hatch
+
+If you have v1 code that you are (gradually) updating to v2, and you find that
+pydantic_compat doesn't yet translate one of the v1 API names you are using,
+and you don't want to update your code to use the v2 name, you can fallback
+to importing from `pydantic_compat.v1`. This module is a copy of the
+`pydantic.v1` namespace that was introduced in pydantic v2:
+
+- if pydantic v1 is installed, then `pydantic_compat.v1` is an alias for
+  `pydantic`
+- if pydantic v2 is installed, then `pydantic_compat.v1` is an alias for
+  `pydantic.v1`
 
 ## Notable differences
 
@@ -142,5 +165,4 @@ pre=False)` passes a dict of `{'field_name' -> validated_value}` to the
 
 ## TODO:
 
-- `Field()` objects
 - Serialization decorators
