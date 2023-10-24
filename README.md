@@ -130,19 +130,6 @@ pydantic version installed (without deprecation warnings):
   `pydantic_compat.validator` then the signature must match the pydantic
   (v1) `validator` signature.
 
-## `pydantic_compat.v1` escape hatch
-
-If you have v1 code that you are (gradually) updating to v2, and you find that
-pydantic_compat doesn't yet translate one of the v1 API names you are using,
-and you don't want to update your code to use the v2 name, you can fallback
-to importing from `pydantic_compat.v1`. This module is a copy of the
-`pydantic.v1` namespace that was introduced in pydantic v2:
-
-- if pydantic v1 is installed, then `pydantic_compat.v1` is an alias for
-  `pydantic`
-- if pydantic v2 is installed, then `pydantic_compat.v1` is an alias for
-  `pydantic.v1`
-
 ## Notable differences
 
 - `BaseModel.__fields__` in v1 is a dict of `{'field_name' -> ModelField}`
