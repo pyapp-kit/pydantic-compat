@@ -23,47 +23,19 @@ jobs:
       - run: pipx run check-manifest
 
   test:
-    name: ${{ matrix.platform }} (${{ matrix.python-version }})
-    runs-on: ${{ matrix.platform }}
+    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@v1
+    with:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+      pip-post-installs: ${{ matrix.pydantic }}
+      pip-install-pre-release: ${{ github.event_name == 'schedule' }}
+      report-failures: ${{ github.event_name == 'schedule' }}
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev"]
-        platform: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: python -m pip install -U pip hatch
-
-      - name: Test
-        run: hatch run test:test-cov-xml
-        env:
-          # if github.event_name == 'schedule' we want to test the --pre release
-          PIP_PRE: ${{ github.event_name == 'schedule' }}
-
-      # If something goes wrong, we can open an issue in the repo
-      - name: Report --pre Failures
-        if: failure() && github.event_name == 'schedule'
-        uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PLATFORM: ${{ matrix.platform }}
-          PYTHON: ${{ matrix.python-version }}
-          RUN_ID: ${{ github.run_id }}
-          TITLE: "[test-bot] pip install --pre is failing"
-        with:
-          filename: .github/TEST_FAIL_TEMPLATE.md
-          update_existing: true
-
-      - name: Coverage
-        uses: codecov/codecov-action@v3
+        os: [ubuntu-latest]
+        pydantic: ["'pydantic<1.9'", "'pydantic<1.10'", "'pydantic<2.0'", "'pydantic>=2.0'"]
 
   deploy:
     name: Deploy
