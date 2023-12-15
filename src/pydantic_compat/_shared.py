@@ -43,7 +43,6 @@ V1_FIELDS_TO_V2_FIELDS = {
     "max_items": "max_length",
     "regex": "pattern",
     "allow_mutation": "-frozen",
-    # "metadata": "json_schema_extra['metadata']",  # needs special handling
 }
 
 V2_FIELDS_TO_V1_FIELDS = {}
