@@ -112,7 +112,7 @@ pydantic version installed (without deprecation warnings):
   | `max_items`      | `max_length`        |
   | `regex`          | `pattern`           |
   | `allow_mutation` | `not frozen`        |
-  | `metadata`       | `json_schema_extra` |
+  | `<extra_key>`       | `json_schema_extra['<extra_key>']` |
 - Don't use `var = Field(..., const='val')`, use `var: Literal['val'] = 'val'`
   it works in both v1 and v2
 - No attempt is made to convert between v1's `unique_items` and v2's `Set[]`

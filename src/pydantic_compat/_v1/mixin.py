@@ -136,8 +136,15 @@ class FieldInfoLike:
     def frozen(self) -> bool:
         return not self._model_field.field_info.allow_mutation
 
+    @property
+    def json_schema_extra(self) -> dict:
+        return self._model_field.field_info.extra
+
     def __getattr__(self, key: str) -> Any:
         return getattr(self._model_field, key)
+
+    def __repr__(self) -> str:
+        return repr(self._model_field)
 
 
 class FieldInfoMap(Mapping[str, FieldInfoLike]):

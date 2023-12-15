@@ -3,7 +3,7 @@ from typing import ClassVar, List, Tuple
 import pytest
 from typing_extensions import Literal
 
-from pydantic_compat import BaseModel, Field
+from pydantic_compat import PYDANTIC2, BaseModel, Field
 
 
 def test_field_const() -> None:
@@ -87,3 +87,10 @@ def test_double_usage_raises(keys: Tuple[str, str]) -> None:
 #         bar: List[int] = Field(..., unique_items=True)
 #     with pytest.raises(ValueError):
 #         Foo(bar=[1, 2, 3, 1])
+
+
+def test_field_extras() -> None:
+    class Foo(BaseModel):
+        bar: int = Field(..., metadata={"foo": "bar"})  # type: ignore
+
+    assert Foo.model_fields["bar"].json_schema_extra["metadata"] == {"foo": "bar"}
