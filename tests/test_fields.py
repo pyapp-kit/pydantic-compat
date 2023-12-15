@@ -3,7 +3,7 @@ from typing import ClassVar, List, Tuple
 import pytest
 from typing_extensions import Literal
 
-from pydantic_compat import PYDANTIC2, BaseModel, Field
+from pydantic_compat import BaseModel, Field
 
 
 def test_field_const() -> None:
