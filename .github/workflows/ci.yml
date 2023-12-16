@@ -42,7 +42,7 @@ jobs:
     with:
       python-version: ${{ matrix.python-version }}
       dependency-repo: tlambert03/ome-types
-      dependency-extras: "test"
+      dependency-extras: "test,dev"
       post-install-cmd: pip install ${{ matrix.pydantic }}
     strategy:
       matrix:
