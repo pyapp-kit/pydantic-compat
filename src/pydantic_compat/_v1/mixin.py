@@ -138,7 +138,7 @@ class FieldInfoLike:
 
     @property
     def json_schema_extra(self) -> dict:
-        return self._model_field.field_info.extra
+        return self._model_field.field_info.extra  # type: ignore [no-any-return]
 
     def __getattr__(self, key: str) -> Any:
         return getattr(self._model_field, key)
