@@ -3,14 +3,14 @@ from typing import ClassVar
 import pydantic
 import pytest
 
-from pydantic_compat import PydanticCompatMixin
+from pydantic_compat import PYDANTIC2, PydanticCompatMixin
 
 
 class Model(PydanticCompatMixin, pydantic.BaseModel):
     x: int = 1
 
 
-def test_v1_api():
+def test_v1_api() -> None:
     m = Model()
     assert m.x == 1
     assert m.dict() == {"x": 1}
@@ -32,7 +32,7 @@ def test_v1_api():
     Model.update_forward_refs(name="name")
 
 
-def test_v2_api():
+def test_v2_api() -> None:
     m = Model()
     assert m.x == 1
     assert m.model_dump() == {"x": 1}
@@ -53,7 +53,7 @@ def test_v2_api():
     Model.model_rebuild(force=True)
 
 
-def test_v1_attributes():
+def test_v1_attributes() -> None:
     m = Model()
     assert "x" in m.__fields__
     assert "x" in Model.__fields__
@@ -62,7 +62,7 @@ def test_v1_attributes():
     assert "x" in m.__fields_set__
 
 
-def test_v2_attributes():
+def test_v2_attributes() -> None:
     m = Model()
     assert "x" in m.model_fields
     assert "x" in Model.model_fields
@@ -70,8 +70,15 @@ def test_v2_attributes():
     m.x = 2
     assert "x" in m.model_fields_set
 
+    if not PYDANTIC2:
+        from pydantic_compat._v1.mixin import FieldInfoMap
 
-def test_mixin_order():
+        assert isinstance(Model.model_fields, FieldInfoMap)
+    else:
+        assert isinstance(Model.model_fields, dict)
+
+
+def test_mixin_order() -> None:
     with pytest.warns(
         match="PydanticCompatMixin should appear before pydantic.BaseModel"
     ):
@@ -94,7 +101,7 @@ class V1Config:
 
 
 @pytest.mark.parametrize("config", [V1Config, V2Config])
-def test_config(config):
+def test_config(config: object) -> None:
     class Model1(PydanticCompatMixin, pydantic.BaseModel):
         name: str = pydantic.Field(alias="full_name")
 
