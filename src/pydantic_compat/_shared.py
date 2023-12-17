@@ -1,11 +1,17 @@
 import contextlib
 import warnings
+from inspect import signature
 from typing import Any
 
 import pydantic
 import pydantic.version
 
 PYDANTIC2 = pydantic.version.VERSION.startswith("2")
+FIELD_KWARGS = {
+    p.name
+    for p in signature(pydantic.Field).parameters.values()
+    if p.kind != p.VAR_KEYWORD
+}
 
 V2_REMOVED_CONFIG_KEYS = {
     "allow_mutation",
@@ -37,7 +43,6 @@ V1_FIELDS_TO_V2_FIELDS = {
     "max_items": "max_length",
     "regex": "pattern",
     "allow_mutation": "-frozen",
-    "metadata": "json_schema_extra",
 }
 
 V2_FIELDS_TO_V1_FIELDS = {}
@@ -89,8 +94,25 @@ def clean_field_kwargs(kwargs: dict) -> dict:
     return kwargs
 
 
+if PYDANTIC2:
+
+    def move_extras(kwargs: dict) -> dict:
+        """Move extra field arguments to json_schema_extra."""
+        extras = {k: kwargs.pop(k) for k in list(kwargs) if k not in FIELD_KWARGS}
+        kwargs.setdefault("json_schema_extra", {}).update(extras)
+        return kwargs
+
+else:
+
+    def move_extras(kwargs: dict) -> dict:
+        """Move unknown json_schema_extra fields to extras."""
+        kwargs.update(kwargs.pop("json_schema_extra", {}))
+        return kwargs
+
+
 def Field(*args: Any, **kwargs: Any) -> Any:
     """Create a field for objects that can be configured."""
-    kwargs = clean_field_kwargs(kwargs)
-    kwargs = move_field_kwargs(kwargs)
+    kwargs = clean_field_kwargs(kwargs)  # remove outdated kwargs
+    kwargs = move_field_kwargs(kwargs)  # move kwargs from v1 to v2 and vice versa
+    kwargs = move_extras(kwargs)  # move extras to/from json_schema_extra
     return pydantic.Field(*args, **kwargs)

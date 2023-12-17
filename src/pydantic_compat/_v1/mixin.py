@@ -34,12 +34,6 @@ if TYPE_CHECKING:
         __config__: ClassVar[type]
     # fmt:on
 
-if sys.version_info < (3, 9):
-
-    def _get_fields(obj) -> dict[str, Any]:
-        return obj.__fields__
-
-    main.ModelMetaclass.model_fields = property(_get_fields)
 
 REVERSE_CONFIG_NAME_MAP = {v: k for k, v in V2_RENAMED_CONFIG_KEYS.items()}
 
@@ -58,6 +52,12 @@ class _MixinMeta(main.ModelMetaclass):
             namespace["Config"] = _convert_config(namespace.pop("model_config"))
 
         return super().__new__(cls, name, bases, namespace, **kwargs)
+
+    if sys.version_info < (3, 9):
+
+        @property
+        def model_fields(cls) -> dict[str, Any]:
+            return FieldInfoMap(cls.__fields__)
 
 
 class PydanticCompatMixin(metaclass=_MixinMeta):
@@ -136,8 +136,15 @@ class FieldInfoLike:
     def frozen(self) -> bool:
         return not self._model_field.field_info.allow_mutation
 
+    @property
+    def json_schema_extra(self) -> dict:
+        return self._model_field.field_info.extra  # type: ignore [no-any-return]
+
     def __getattr__(self, key: str) -> Any:
         return getattr(self._model_field, key)
+
+    def __repr__(self) -> str:
+        return repr(self._model_field)
 
 
 class FieldInfoMap(Mapping[str, FieldInfoLike]):
