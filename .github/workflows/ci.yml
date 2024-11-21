@@ -23,7 +23,7 @@ jobs:
       - run: pipx run check-manifest
 
   test:
-    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@v1
+    uses: pyapp-kit/workflows/.github/workflows/test-pyrepo.yml@v2
     secrets: inherit
     with:
       os: ${{ matrix.os }}
@@ -39,7 +39,7 @@ jobs:
         pydantic: ["'pydantic<1.9'", "'pydantic<2.0'", "'pydantic>=2.0'"]
 
   test-ome-types:
-    uses: pyapp-kit/workflows/.github/workflows/test-dependents.yml@v1
+    uses: pyapp-kit/workflows/.github/workflows/test-dependents.yml@v2
     with:
       python-version: ${{ matrix.python-version }}
       dependency-repo: tlambert03/ome-types
