@@ -15,15 +15,15 @@ except PackageNotFoundError:  # pragma: no cover
 __author__ = "Talley Lambert"
 __email__ = "talley.lambert@gmail.com"
 __all__ = [
+    "PYDANTIC2",
+    "BaseModel",
+    "Field",
+    "PydanticCompatMixin",
     "__version__",
     "field_validator",
     "model_validator",
-    "PYDANTIC2",
-    "PydanticCompatMixin",
     "root_validator",
     "validator",
-    "Field",
-    "BaseModel",
 ]
 
 from ._shared import PYDANTIC2
