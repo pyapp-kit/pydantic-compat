@@ -26,7 +26,6 @@ The API conversion is not exhaustive, but suffices for many of the use cases
 I have come across. It is in use by the following libraries:
 
 - [ome-types](https://github.com/tlambert03/ome-types)
-- [psygnal](https://github.com/pyapp-kit/psygnal)
 - [app-model](https://github.com/pyapp-kit/app-model)
 - [useq-schema](https://github.com/pymmcore-plus/useq-schema)
 
