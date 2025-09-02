@@ -5,8 +5,9 @@ from typing import Any
 
 import pydantic
 import pydantic.version
+from packaging.version import Version
 
-PYDANTIC2 = pydantic.version.VERSION.startswith("2")
+PYDANTIC2 = Version(pydantic.version.VERSION) >= Version("2")
 FIELD_KWARGS = {
     p.name
     for p in signature(pydantic.Field).parameters.values()

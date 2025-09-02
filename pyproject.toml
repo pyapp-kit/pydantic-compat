@@ -26,7 +26,11 @@ classifiers = [
     "Typing :: Typed",
 ]
 dynamic = ["version"]
-dependencies = ["pydantic", "importlib_metadata; python_version<'3.8'"]
+dependencies = [
+    "pydantic",
+    "importlib_metadata; python_version<'3.8'",
+    "packaging",
+]
 
 [tool.hatch.envs.default]
 dependencies = [
