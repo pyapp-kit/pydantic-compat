@@ -7,6 +7,15 @@
 [![CI](https://github.com/pyapp-kit/pydantic-compat/actions/workflows/ci.yml/badge.svg)](https://github.com/pyapp-kit/pydantic-compat/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/pyapp-kit/pydantic-compat/branch/main/graph/badge.svg)](https://codecov.io/gh/pyapp-kit/pydantic-compat)
 
+> [!IMPORTANT]
+>
+> **Maintenance Mode**
+> 
+> With pydantic out for over 2 years now, pinning to pydantic>=2 is
+> becoming more feasible.  This package is now in maintenance mode, and will
+> not receive updates for new features or breaking changes.  You may
+> start to see warnings for deprecated features.
+
 ## Motivation
 
 Pydantic 2 was a major release that completely changed the pydantic API.
