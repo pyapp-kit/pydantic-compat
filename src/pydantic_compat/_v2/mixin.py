@@ -5,7 +5,11 @@ from typing import TYPE_CHECKING, Any, ClassVar, Dict, cast
 from pydantic import BaseModel
 from pydantic._internal import _model_construction
 
-from pydantic_compat._shared import V2_RENAMED_CONFIG_KEYS, check_mixin_order
+from pydantic_compat._shared import (
+    PYDANTIC2_10,
+    V2_RENAMED_CONFIG_KEYS,
+    check_mixin_order,
+)
 
 if TYPE_CHECKING:
     from pydantic import ConfigDict
@@ -93,7 +97,10 @@ class PydanticCompatMixin(metaclass=_MixinMeta):
     # this is needed in addition to the metaclass patch in __init_subclass__
     @property
     def __fields__(self: Model) -> Dict[str, Any]:  # noqa: UP006
-        return self.model_fields
+        if PYDANTIC2_10:
+            return self.__class__.model_fields
+        else:
+            return self.model_fields
 
     @property
     def __fields_set__(self: Model) -> set[str]:
