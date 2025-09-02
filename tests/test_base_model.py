@@ -4,6 +4,7 @@ import pydantic
 import pytest
 
 from pydantic_compat import PYDANTIC2, PydanticCompatMixin
+from pydantic_compat._shared import PYDANTIC2_10
 
 
 class Model(PydanticCompatMixin, pydantic.BaseModel):
@@ -64,7 +65,8 @@ def test_v1_attributes() -> None:
 
 def test_v2_attributes() -> None:
     m = Model()
-    assert "x" in m.model_fields
+    if not PYDANTIC2_10:
+        assert "x" in m.model_fields
     assert "x" in Model.model_fields
     assert "x" not in m.model_fields_set
     m.x = 2

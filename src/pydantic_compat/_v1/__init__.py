@@ -1,6 +1,7 @@
 import pydantic.version
+from packaging.version import Version
 
-if not pydantic.version.VERSION.startswith("1"):  # pragma: no cover
+if Version(pydantic.version.VERSION) >= Version("2"):  # pragma: no cover
     raise ImportError("pydantic_compat._v1 only supports pydantic v1.x")
 
 
