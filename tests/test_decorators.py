@@ -120,9 +120,9 @@ def test_v2_model_validator():
             return v
 
         @model_validator(mode="after")
-        def _validate_x_after(cls, v):
-            mock_after(v)
-            return v
+        def _validate_x_after(self):
+            mock_after()
+            return self
 
         # this also needs to work
         @model_validator(mode="after")
@@ -133,6 +133,6 @@ def test_v2_model_validator():
 
     m = Model(x="2")
     mock_before.assert_called_once_with({"x": "2"})
-    mock_after.assert_called_once_with(m)
+    mock_after.assert_called_once_with()
     mock_after_cm.assert_called_once_with(m)
     assert m.x == 2
